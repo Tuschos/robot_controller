@@ -15,28 +15,4 @@ def generate_launch_description():
             name='slave_controller',
             output='screen',
         ),
-        Node(
-            package='robot_controller',
-            executable='master_controller',
-            name='master_controller',
-            output='screen',
-        ),
-        Node(
-            package='robot_controller',
-            executable='delay_relay_node',
-            name='delay_relay_node',
-            output='screen',
-        ),
-        Node(
-            package='robot_controller',
-            executable='data_logger',
-            name='data_logger',
-            output='screen',
-        ),
-        Node(
-            package='robot_controller',
-            executable='check_limit_vel',
-            name='check_limit_vel',
-            output='screen',
-        ),
     ])
