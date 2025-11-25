@@ -3,7 +3,7 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
-from nav_msgs.msg import Odometry
+from geometry_msgs.msg import TwistStamped
 from std_msgs.msg import Float64
 import math
 import numpy as np
@@ -35,9 +35,9 @@ class FictitiousForceNode(Node):
         )
         
         self.slave_subscription = self.create_subscription(
-            Odometry,
-            '/diff_cont/odom',
-            self.odom_callback,
+            TwistStamped,
+            '/vel_encoder/data',
+            self.vel_encoder_sub_cb,
             10
         )
 
@@ -47,9 +47,9 @@ class FictitiousForceNode(Node):
             10
         )
 
-    def odom_callback(self, msg : Odometry):
-        self.v = msg.twist.twist.linear.x
-        self.omega = msg.twist.twist.angular.z
+    def vel_encoder_sub_cb(self, msg : TwistStamped):
+        self.v = msg.twist.linear.x
+        self.omega = msg.twist.angular.z
 
     def laser_callback(self, scan: LaserScan):
         # Bước 1: Dự đoán bán kính quỹ đạo

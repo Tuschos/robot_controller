@@ -3,7 +3,7 @@
 import rclpy
 from rclpy.node import Node
 from control_msgs.msg import DynamicJointState
-from nav_msgs.msg import Odometry
+from geometry_msgs.msg import TwistStamped
 from std_msgs.msg import Float64MultiArray
 
 class MasterControllerNode(Node):
@@ -35,8 +35,8 @@ class MasterControllerNode(Node):
         )
 
         self.slave_subscription = self.create_subscription(
-            Odometry,
-            '/diff_cont/odom_delayed',
+            TwistStamped,
+            '/vel_encoder/data',
             self.slave_callback,
             10
         )
@@ -61,9 +61,9 @@ class MasterControllerNode(Node):
         # elif self.pos_x < -0.00:
         #     self.pos_x -= 0.015
 
-    def slave_callback(self, msg : Odometry):
-        self.v = msg.twist.twist.linear.x
-        self.omega = msg.twist.twist.angular.z
+    def slave_callback(self, msg : TwistStamped):
+        self.v = msg.twist.linear.x
+        self.omega = msg.twist.angular.z
 
     def timer_callback(self):
         force_command = Float64MultiArray()

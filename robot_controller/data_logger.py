@@ -4,7 +4,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64MultiArray
 from std_msgs.msg import Float64 
-from nav_msgs.msg import Odometry
+from geometry_msgs.msg import TwistStamped
 from control_msgs.msg import DynamicJointState
 import csv
 import time
@@ -13,9 +13,9 @@ class DataLogger(Node):
     def __init__(self):
         super().__init__('data_logger')
         self.force_sub = self.create_subscription(Float64MultiArray, '/fd/fd_controller/commands', self.force_cb, 10)
-        self.odom_sub = self.create_subscription(Odometry, '/diff_cont/odom', self.odom_cb, 10)
+        self.vel_encoder_sub = self.create_subscription(TwistStamped, '/vel_encoder/data', self.vel_encoder_sub_cb, 10)
         self.fictitious_sub = self.create_subscription(Float64, '/fictitious_force', self.fictitious_cb, 10)
-        self.master_sub = self.create_subscription(DynamicJointState, '/fd/dynamic_joint_states_delayed',self.master_cb,10)
+        self.master_sub = self.create_subscription(DynamicJointState, '/fd/dynamic_joint_states',self.master_cb,10)
 
         self.csv_file = open('/tmp/data_log.csv', 'w', newline='')
         self.writer = csv.writer(self.csv_file)
@@ -39,9 +39,9 @@ class DataLogger(Node):
     def fictitious_cb(self, msg : Float64):
         self.f_v = msg.data
 
-    def odom_cb(self, msg : Odometry):
-        self.v = msg.twist.twist.linear.x
-        self.omega = msg.twist.twist.angular.z
+    def vel_encoder_sub_cb(self, msg : TwistStamped):
+        self.v = msg.twist.linear.x
+        self.omega = msg.twist.angular.z
 
     def master_cb(self, msg : DynamicJointState):
         self.pos_x = msg.interface_values[0].values[0]

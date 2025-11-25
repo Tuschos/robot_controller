@@ -3,7 +3,7 @@
 import rclpy
 from rclpy.node import Node
 from control_msgs.msg import DynamicJointState
-from nav_msgs.msg import Odometry
+from geometry_msgs.msg import TwistStamped
 from std_msgs.msg import Float64 
 from geometry_msgs.msg import Twist
 
@@ -33,14 +33,14 @@ class SlaveControllerNode(Node):
 
         self.master_subscription = self.create_subscription(
             DynamicJointState,
-            '/fd/dynamic_joint_states_delayed',
+            '/fd/dynamic_joint_states',
             self.master_callback,
             10
         )
 
         self.slave_subscription = self.create_subscription(
-            Odometry,
-            '/diff_cont/odom',
+            TwistStamped,
+            '/vel_encoder/data',
             self.slave_callback,
             10
         )
@@ -61,7 +61,7 @@ class SlaveControllerNode(Node):
 
         self.cmd_vel_pubblisher = self.create_publisher(
             Twist,
-            '/cmd_vel_checked',
+            '/cmd_vel',
             10
         )
 
@@ -84,10 +84,10 @@ class SlaveControllerNode(Node):
         #         self.pos_y -= 0.1726
         
 
-    def slave_callback(self, msg : Odometry):
+    def slave_callback(self, msg : TwistStamped):
         # Lấy vận tốc hiện tại
-        self.v = msg.twist.twist.linear.x
-        self.omega = msg.twist.twist.angular.z
+        self.v = msg.twist.linear.x
+        self.omega = msg.twist.angular.z
 
         # # Lấy thời gian hiện tại
         # time_now = self.get_clock().now()

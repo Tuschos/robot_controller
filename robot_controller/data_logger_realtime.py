@@ -6,7 +6,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64MultiArray
 from std_msgs.msg import Float64 
-from nav_msgs.msg import Odometry
+from geometry_msgs.msg import TwistStamped
 from control_msgs.msg import DynamicJointState
 
 import matplotlib.pyplot as plt
@@ -46,7 +46,7 @@ class DataLoggerRealtimeNode(Node):
         self.create_subscription(DynamicJointState, '/fd/dynamic_joint_states_delayed',self.master_cb,10)
 
         # Vận tốc robot (giả sử Twist)
-        self.odom_sub = self.create_subscription(Odometry, '/diff_cont/odom', self.odom_cb, 10)
+        self.vel_encoder_sub = self.create_subscription(TwistStamped, '/vel_encoder/data', self.vel_encoder_sub_cb, 10)
 
         # Lực phản hồi tại master (giả sử WrenchStamped)
         self.force_sub = self.create_subscription(Float64MultiArray, '/fd/fd_controller/commands', self.force_cb, 10)
@@ -109,10 +109,10 @@ class DataLoggerRealtimeNode(Node):
         self.master_pos['x'] = msg.interface_values[0].values[0]
         self.master_pos['y'] = msg.interface_values[1].values[0]
 
-    def odom_cb(self, msg: Odometry):
+    def vel_encoder_sub_cb(self, msg: TwistStamped):
         # Giả sử dùng linear.x là vận tốc thẳng, angular.z là vận tốc quay
-        self.robot_vel['v'] = msg.twist.twist.linear.x
-        self.robot_vel['w'] = msg.twist.twist.angular.z
+        self.robot_vel['v'] = msg.twist.linear.x
+        self.robot_vel['w'] = msg.twist.angular.z
 
     def force_cb(self, msg: Float64MultiArray):
         self.master_force['x'] = msg.data[0]
