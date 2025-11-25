@@ -5,14 +5,14 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package='robot_controller',
-            executable='fictitious_force_node',
-            name='fictitious_force_node',
+            executable='master_controller',
+            name='master_controller',
             output='screen',
         ),
         Node(
             package='robot_controller',
-            executable='slave_controller',
-            name='slave_controller',
+            executable='data_logger',
+            name='data_logger',
             output='screen',
         ),
     ])
