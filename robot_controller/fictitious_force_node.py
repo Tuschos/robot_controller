@@ -14,7 +14,7 @@ class FictitiousForceNode(Node):
         self.declare_parameter('robot_width', 0.23)   # m
         self.declare_parameter('delta', 0.2)         # m
         self.declare_parameter('force_gain', 12.0)
-        self.declare_parameter('force_max', 0.3)
+        self.declare_parameter('force_max', 0.25)
 
         self.c = self.get_parameter('robot_width').value
         self.delta = self.get_parameter('delta').value
@@ -109,7 +109,7 @@ class FictitiousForceNode(Node):
                     p_i = 0.0
 
                 # Tổng hợp lực
-                fv_raw += p_i * (s_max - s_i if s_i < s_max else 0.0)
+                fv_raw += p_i * (s_max - s_i if s_i <= s_max else 0.0)
             
             else:
                 continue

@@ -8,8 +8,8 @@ class CheckLimitVelocityNode(Node):
     def __init__(self):
         super().__init__("check_limit_vel")
 
-        self.wheel_min_vel = 0.085
-        self.wheel_max_vel = 0.40
+        self.wheel_min_vel = 0.08
+        self.wheel_max_vel = 0.45
         self.robot_width = 0.175
 
         self.vel_in_sub = self.create_subscription(
@@ -35,24 +35,20 @@ class CheckLimitVelocityNode(Node):
         # self.get_logger().info(f"vr = {v_right:.3f}, vl = {v_left:.3f}")
 
         # Check vel right
-        # if ( self.isValid_vel(v_right, self.wheel_min_vel, self.wheel_max_vel) == 0 ):
-        #     v_right = 0.0
-        # elif ( self.isValid_vel(v_right, self.wheel_min_vel, self.wheel_max_vel) == 1 ):
-        #     v_right = self.wheel_max_vel
-        # elif ( self.isValid_vel(v_right, self.wheel_min_vel, self.wheel_max_vel) == -1 ):
-        #     v_right = -self.wheel_max_vel
-        # else:
-        #     pass
+        if ( self.isValid_vel(v_right, self.wheel_min_vel, self.wheel_max_vel) == 0 ):
+            v_right = 0.0
+        elif ( self.isValid_vel(v_right, self.wheel_min_vel, self.wheel_max_vel) == 1 ):
+            v_right = self.wheel_max_vel * v_right/abs(v_right)
+        else:
+            pass
 
-        # # Check vel left
-        # if ( self.isValid_vel(v_left, self.wheel_min_vel, self.wheel_max_vel) == 0 ):
-        #     v_left = 0.0
-        # elif ( self.isValid_vel(v_left, self.wheel_min_vel, self.wheel_max_vel) == 1 ):
-        #     v_left = self.wheel_max_vel
-        # elif ( self.isValid_vel(v_left, self.wheel_min_vel, self.wheel_max_vel) == -1 ):
-        #     v_left = -self.wheel_max_vel
-        # else:
-        #     pass
+        # Check vel left
+        if ( self.isValid_vel(v_left, self.wheel_min_vel, self.wheel_max_vel) == 0 ):
+            v_left = 0.0
+        elif ( self.isValid_vel(v_left, self.wheel_min_vel, self.wheel_max_vel) == 1 ):
+            v_left = self.wheel_max_vel * v_left/abs(v_left)
+        else:
+            pass
 
         
 
@@ -69,10 +65,8 @@ class CheckLimitVelocityNode(Node):
     def isValid_vel(self, vel, v_min, v_max):
         if ( abs(vel) < v_min ):
             return 0
-        elif ( vel > v_max ):
+        elif ( abs(vel) > v_max ):
             return 1
-        elif ( vel < -v_max ):
-            return -1
         else:
             return 2
         

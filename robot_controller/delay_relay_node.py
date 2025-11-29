@@ -7,8 +7,7 @@ import random
 
 from control_msgs.msg import DynamicJointState
 from nav_msgs.msg import Odometry
-from std_msgs.msg import Float64
-
+import math
 
 class DelayRelayNode(Node):
     def __init__(self):
@@ -17,6 +16,7 @@ class DelayRelayNode(Node):
         # Thời gian delay
         self.h1 = 0.0
         self.h2 = 0.0
+        self.counter = 0
 
         # Hàng đợi cho từng loại message
         self.queue_master = deque()
@@ -44,7 +44,7 @@ class DelayRelayNode(Node):
 
 
         # Timer xử lý gửi sau delay
-        self.create_timer(0.005, self.timer_callback)  # 200 Hz
+        self.create_timer(0.01, self.timer_callback)  # 100 Hz
 
     def master_callback(self, msg : DynamicJointState):
         now = self.get_clock().now()
@@ -56,12 +56,15 @@ class DelayRelayNode(Node):
 
 
     def timer_callback(self):
-        
+
         #Random time delay
-        # self.h1 = random.uniform(0.15, 0.4)   # 150-400ms
-        # self.h2 = random.uniform(0.15, 0.4)  # 150-400ms
-        self.h1 = 0.01
-        self.h2 = 0.01
+        # self.h2 = 0.2   # 200ms
+        # self.h1 = 0.3 + 0.1 *math.sin(self.counter * 0.2 * 3.14)  # 200-400ms
+        # self.counter += 1
+        # if( self.counter > 100000000):
+        #     self.counter = 0
+        self.h1 = 0.001
+        self.h2 = 0.001
 
         now = self.get_clock().now()
         

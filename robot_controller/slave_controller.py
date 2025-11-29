@@ -12,7 +12,7 @@ class SlaveControllerNode(Node):
         super().__init__('slave_controller')
 
         # He so dieu khien
-        self.k_g = [9.0, 16.0]
+        self.k_g = [8.0, 16.0]
 
         # Thong so master & slave
         self.v = 0.0
