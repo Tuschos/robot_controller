@@ -57,7 +57,7 @@ class DataLogger(Node):
 
     def log_data(self):
         now = self.get_clock().now().nanoseconds * 1e-9 - self.start_time
-        row = [now, *self.f_m,self.odom_x, self.odom_y, self.f_v, self.pos_x, self.pos_y, self.v, self.omega, 2 * self.h1]
+        row = [now, *self.f_m,self.odom_x, self.odom_y, self.f_v, self.pos_x, self.pos_y, self.v, self.omega, self.h1]
         self.writer.writerow(row)
 
     def destroy_node(self):

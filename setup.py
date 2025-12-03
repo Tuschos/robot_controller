@@ -24,7 +24,6 @@ setup(
     entry_points={
         'console_scripts': [
             "fictitious_force_node = robot_controller.fictitious_force_node:main",
-            "master_controller = robot_controller.master_controller:main",
             "slave_controller = robot_controller.slave_controller:main",
             "data_logger = robot_controller.data_logger:main",
             "data_logger_realtime = robot_controller.data_logger_realtime:main",

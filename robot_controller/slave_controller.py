@@ -49,13 +49,6 @@ class SlaveControllerNode(Node):
             10
         )
 
-        # Mo phong robot that co cac gioi han vat ly. Chay node check_limit_vel
-        # self.cmd_vel_pubblisher = self.create_publisher(
-        #     Twist,
-        #     '/cmd_vel',
-        #     10
-        # )
-
         self.cmd_vel_pubblisher = self.create_publisher(
             Twist,
             '/cmd_vel',
