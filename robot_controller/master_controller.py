@@ -75,7 +75,6 @@ class MasterControllerNode(Node):
         k_m = self.k_m
         k_g = self.k_g
         alpha_m = self.alpha_m
-        k_p = self.k_p
 
         # Tinh luc phan hoi tren tung truc
         f_x = -k_m[0] * (k_g[0] * pos_x - v) - alpha_m[0] * vel_x 
