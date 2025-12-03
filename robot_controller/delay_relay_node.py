@@ -58,13 +58,13 @@ class DelayRelayNode(Node):
     def timer_callback(self):
 
         #Random time delay
-        # self.h2 = 0.2   # 200ms
-        # self.h1 = 0.3 + 0.1 *math.sin(self.counter * 0.2 * 3.14)  # 200-400ms
-        # self.counter += 1
-        # if( self.counter > 100000000):
-        #     self.counter = 0
-        self.h1 = 0.001
-        self.h2 = 0.001
+        self.h2 = 0.6   # 200ms
+        self.h1 = 0.7 + 0.2 * math.sin(self.counter * 0.1 * 3.14)  # 200-400ms
+        self.counter += 1
+        if( self.counter > 100000000):
+            self.counter = 0
+        # self.h1 = 0.001
+        # self.h2 = 0.001
 
         now = self.get_clock().now()
         

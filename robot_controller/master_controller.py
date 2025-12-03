@@ -14,7 +14,7 @@ class MasterControllerNode(Node):
         self.k_m = [20.0, 5.0]
         self.k_g = [8.0, 16.0]
         self.alpha_m = [0.0, 0.0]
-        # self.alpha_m = [8.0, 2.0]
+        self.alpha_m = [16.0, 4.0]
         #self.k_p = [0.01, 0.01]
         self.k_p = [0.0, 0.0]
 

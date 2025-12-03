@@ -25,7 +25,7 @@ class FictitiousForceNode(Node):
         self.v = 0.0
         self.omega = 0.0
         self.fv_fil = 0.0
-        self.alpha = 0.7    # He so loc thong thap
+        self.alpha = 0.55    # He so loc thong thap
 
         self.laser_subscription = self.create_subscription(
             LaserScan,
