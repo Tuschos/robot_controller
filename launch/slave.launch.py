@@ -15,4 +15,10 @@ def generate_launch_description():
             name='fictitious_force_node',
             output='screen',
         ),
+        Node(
+            package='robot_controller',
+            executable='data_logger',
+            name='data_logger',
+            output='screen',
+        ),
     ])

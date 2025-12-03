@@ -14,7 +14,7 @@ class FictitiousForceNode(Node):
         self.declare_parameter('robot_width', 0.23)   # m
         self.declare_parameter('delta', 0.2)         # m
         self.declare_parameter('force_gain', 12.0)
-        self.declare_parameter('force_max', 0.3)
+        self.declare_parameter('force_max', 0.25)
 
         self.c = self.get_parameter('robot_width').value
         self.delta = self.get_parameter('delta').value
@@ -25,7 +25,7 @@ class FictitiousForceNode(Node):
         self.v = 0.0
         self.omega = 0.0
         self.fv_fil = 0.0
-        self.alpha = 0.7    # He so loc thong thap
+        self.alpha = 0.6    # He so loc thong thap
 
         self.laser_subscription = self.create_subscription(
             LaserScan,
@@ -74,7 +74,7 @@ class FictitiousForceNode(Node):
         fic_force = Float64()
         fv_raw = 0.0
         
-        for i in range(n):
+        for i in range(0, n, 3):
             l_i = ranges[i]
             theta_i = angles[i]
             
@@ -83,6 +83,8 @@ class FictitiousForceNode(Node):
                    # theta_i = theta_i - 3.14
                 #else:
                   #  theta_i = theta_i + 3.14
+            if (l_i < 0.18) or (l_i > 2.0):
+                continue
 
             if theta_i > -1.2 and theta_i < 1.2:          
                 # Vị trí oi theo quỹ đạo dự đoán

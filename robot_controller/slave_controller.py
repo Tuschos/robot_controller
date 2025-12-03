@@ -12,7 +12,7 @@ class SlaveControllerNode(Node):
         super().__init__('slave_controller')
 
         # He so dieu khien
-        self.k_g = [9.0, 16.0]
+        self.k_g = [8.0, 16.0]
 
         # Thong so master & slave
         self.v = 0.0
@@ -21,10 +21,7 @@ class SlaveControllerNode(Node):
         self.a_omega = 0.0
         self.pos_x = 0.0
         self.pos_y = 0.0
-
-        # Luc phan hoi ao va luc dieu khien robot
         self.f_v = 0.0
-        self.f_s = [0.0, 0.0]
 
         # # Tham so thoi gian, van toc tinh toan gia toc robot
         # self.v_prev = 0.0
