@@ -6,6 +6,7 @@ from control_msgs.msg import DynamicJointState
 from geometry_msgs.msg import TwistStamped
 from std_msgs.msg import Float64 
 from geometry_msgs.msg import Twist
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 
 class SlaveControllerNode(Node):
     def __init__(self):
@@ -27,6 +28,13 @@ class SlaveControllerNode(Node):
         # self.v_prev = 0.0
         # self.omega_prev = 0.0
         # self.time_prev = self.get_clock().now()
+        
+        # best effort qos
+        qos_profile = QoSProfile(
+            reliability=QoSReliabilityPolicy.BEST_EFFORT,
+            history=QoSHistoryPolicy.KEEP_LAST,
+            depth=5
+        )
 
         self.master_subscription = self.create_subscription(
             DynamicJointState,
@@ -39,7 +47,7 @@ class SlaveControllerNode(Node):
             TwistStamped,
             '/vel_encoder/data',
             self.slave_callback,
-            10
+            qos_profile
         )
 
         self.fv_subscription = self.create_subscription(

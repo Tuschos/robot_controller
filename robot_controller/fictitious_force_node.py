@@ -5,6 +5,8 @@ from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import TwistStamped
 from std_msgs.msg import Float64
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
+
 import math
 import numpy as np
 
@@ -27,6 +29,13 @@ class FictitiousForceNode(Node):
         self.fv_fil = 0.0
         self.alpha = 0.6    # He so loc thong thap
 
+        # best effort qos
+        qos_profile = QoSProfile(
+            reliability=QoSReliabilityPolicy.BEST_EFFORT,
+            history=QoSHistoryPolicy.KEEP_LAST,
+            depth=5
+        )
+
         self.laser_subscription = self.create_subscription(
             LaserScan,
             '/scan',
@@ -38,7 +47,7 @@ class FictitiousForceNode(Node):
             TwistStamped,
             '/vel_encoder/data',
             self.vel_encoder_sub_cb,
-            10
+            qos_profile
         )
 
         self.fictitious_force_pub = self.create_publisher(
