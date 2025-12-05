@@ -64,7 +64,7 @@ class SlaveControllerNode(Node):
         )
 
         # Timer dieu khien tan so 100hz
-        self.timer_ = self.create_timer(0.01,self.timer_callback)
+        self.timer_ = self.create_timer(0.05,self.timer_callback)
 
     def master_callback(self, msg : DynamicJointState):
         self.pos_x = -msg.interface_values[0].values[0]

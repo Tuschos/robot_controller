@@ -83,7 +83,7 @@ class FictitiousForceNode(Node):
         fic_force = Float64()
         fv_raw = 0.0
         
-        for i in range(0, n, 3):
+        for i in range(0, n, 10):
             l_i = ranges[i]
             theta_i = angles[i]
             
@@ -92,7 +92,7 @@ class FictitiousForceNode(Node):
                    # theta_i = theta_i - 3.14
                 #else:
                   #  theta_i = theta_i + 3.14
-            if (l_i < 0.18) or (l_i > 2.0):
+            if (l_i < 0.1) or (l_i > 2.0):
                 continue
 
             if theta_i > -1.2 and theta_i < 1.2:          

@@ -22,17 +22,16 @@ class DataLogger(Node):
             depth=5
         )
 
-        self.force_sub = self.create_subscription(Float64MultiArray, '/fd/fd_controller/commands', self.force_cb, 10)
+        # self.force_sub = self.create_subscription(Float64MultiArray, '/fd/fd_controller/commands', self.force_cb, 10)
         self.vel_encoder_sub = self.create_subscription(TwistStamped, '/vel_encoder/data', self.vel_encoder_sub_cb, qos_profile)
         self.fictitious_sub = self.create_subscription(Float64, '/fictitious_force', self.fictitious_cb, 10)
         self.master_sub = self.create_subscription(DynamicJointState, '/fd/dynamic_joint_states',self.master_cb,10)
-        self.odometry_sub = self.create_subscription(Odometry, '/odom', self.odometry_cb, qos_profile)
+        # self.odometry_sub = self.create_subscription(Odometry, '/odom', self.odometry_cb, qos_profile)
 
         self.csv_file = open('/tmp/data_log.csv', 'w', newline='')
         self.writer = csv.writer(self.csv_file)
-        self.writer.writerow(['time', 'pos_x_robot', 'pos_y_robot', 'f_x', 'f_y', 'f_v', 'pos_x_master', 'pos_y_master', 'v', 'omega','Tm2s'])
+        self.writer.writerow(['time', 'pos_x_robot', 'pos_y_robot', 'f_v', 'pos_x_master', 'pos_y_master', 'v', 'omega','Tm2s'])
 
-        self.f_m = [0.0, 0.0]
         self.f_v = 0.0
         self.pos_x = 0.0
         self.pos_y = 0.0
@@ -43,7 +42,7 @@ class DataLogger(Node):
         self.odom_y = 0.0
         self.start_time = self.get_clock().now().nanoseconds * 1e-9
 
-        self.timer = self.create_timer(0.01, self.log_data)  # 100Hz
+        self.timer = self.create_timer(0.05, self.log_data)  # 20Hz
 
     def force_cb(self, msg : Float64MultiArray):
         self.f_m = msg.data[:2]
@@ -66,7 +65,7 @@ class DataLogger(Node):
 
     def log_data(self):
         now = self.get_clock().now().nanoseconds * 1e-9 - self.start_time
-        row = [now, *self.f_m,self.odom_x, self.odom_y, self.f_v, self.pos_x, self.pos_y, self.v, self.omega, self.h1]
+        row = [now,self.odom_x, self.odom_y, self.f_v, self.pos_x, self.pos_y, self.v, self.omega, self.h1]
         self.writer.writerow(row)
 
     def destroy_node(self):
