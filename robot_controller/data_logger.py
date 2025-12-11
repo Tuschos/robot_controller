@@ -17,7 +17,7 @@ class DataLogger(Node):
         self.fictitious_sub = self.create_subscription(Float64, '/fictitious_force', self.fictitious_cb, 10)
         self.master_sub = self.create_subscription(DynamicJointState, '/fd/dynamic_joint_states_delayed',self.master_cb,10)
 
-        self.csv_file = open('/home/tus/data_log_teleop/delay_damping2.csv', 'w', newline='')
+        self.csv_file = open('/home/tus/data_log_teleop/test1.csv', 'w', newline='')
         self.writer = csv.writer(self.csv_file)
         self.writer.writerow(['time', 'f_x', 'f_y', 'pos_x_robot', 'pos_y_robot', 'f_v', 'pos_x', 'pos_y', 'v', 'omega','Tm2s', "Ts2m"])
 

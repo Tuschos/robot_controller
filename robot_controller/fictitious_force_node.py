@@ -84,7 +84,7 @@ class FictitiousForceNode(Node):
                 #else:
                   #  theta_i = theta_i + 3.14
 
-            if theta_i > -1.2 and theta_i < 1.2:          
+            if theta_i > -1.3 and theta_i < 1.3:          
                 # Vị trí oi theo quỹ đạo dự đoán
                 # (Nếu robot đi thẳng, oi chính là điểm trên trục x)
                 if abs(omega) < 0.001:
