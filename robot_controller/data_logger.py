@@ -17,7 +17,7 @@ class DataLogger(Node):
         self.fictitious_sub = self.create_subscription(Float64, '/fictitious_force', self.fictitious_cb, 10)
         self.master_sub = self.create_subscription(DynamicJointState, '/fd/dynamic_joint_states_delayed',self.master_cb,10)
 
-        self.csv_file = open('/home/tus/data_log_teleop/test1.csv', 'w', newline='')
+        self.csv_file = open('/home/tus/data_log_teleop/log1.csv', 'w', newline='')
         self.writer = csv.writer(self.csv_file)
         self.writer.writerow(['time', 'f_x', 'f_y', 'pos_x_robot', 'pos_y_robot', 'f_v', 'pos_x', 'pos_y', 'v', 'omega','Tm2s', "Ts2m"])
 
@@ -29,7 +29,7 @@ class DataLogger(Node):
         self.v = 0.0
         self.omega = 0.0
         self.h1 = 0.0
-        self.h2 = 605
+        self.h2 = 0.0
         self.start_time = self.get_clock().now().to_msg().sec + 1e-9 * self.get_clock().now().to_msg().nanosec
 
         self.timer = self.create_timer(0.02, self.log_data)  # 50Hz
@@ -50,10 +50,16 @@ class DataLogger(Node):
         self.pos_x = msg.interface_values[0].values[0]
         self.pos_y = msg.interface_values[1].values[0]
         self.h1 = self.get_clock().now().to_msg().sec * 1e3 + 1e-6 * self.get_clock().now().to_msg().nanosec - (msg.header.stamp.sec * 1e3 + 1e-6 * msg.header.stamp.nanosec)
+        if self.h1 > 50:
+            self.h2 = 210
+        elif self.h1 > 480:
+            self.h2 = 610
+        else:
+            self.h2 = 0.0
 
     def log_data(self):
         now = self.get_clock().now().to_msg().sec + 1e-9 * self.get_clock().now().to_msg().nanosec - self.start_time
-        row = [now, *self.f_m, self.pos_robot[0], self.pos_robot[1], self.f_v, self.pos_x, self.pos_y, self.v, self.omega, self.h1 + self.h2]
+        row = [now, *self.f_m, self.pos_robot[0], self.pos_robot[1], self.f_v, self.pos_x, self.pos_y, self.v, self.omega, self.h1, self.h2]
         self.writer.writerow(row)
 
     def destroy_node(self):
