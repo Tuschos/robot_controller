@@ -29,17 +29,17 @@ class DelayRelayNode(Node):
                                  10)
 
         self.create_subscription(Odometry,
-                                 '/diff_cont/odom',
+                                 '/diff_drive_controller/odom',
                                  self.odom_callback,
                                  10)
 
         # Publishers (topic sau delay)
         self.pub_master = self.create_publisher(DynamicJointState,
-                                                '/fd/dynamic_joint_states_delayed',
+                                                '/delayed/fd/dynamic_joint_states',
                                                 10)
 
         self.pub_odom = self.create_publisher(Odometry,
-                                              '/diff_cont/odom_delayed',
+                                              '/delayed/diff_drive_controller/odom',
                                               10)
 
 
@@ -57,16 +57,16 @@ class DelayRelayNode(Node):
 
     def timer_callback(self):
 
-        # #Random time delay
+        #Random time delay
         # self.h2 = 0.2   # 200ms
-        # # self.h1 = 0.3 + 0.1 * math.sin(self.counter * 0.1 * 3.14)  # 200-400ms
+        # self.h1 = 0.3 + 0.1 * math.sin(self.counter * 0.1 * 3.14)  # 200-400ms
         # self.counter += 1
         # if( self.counter > 100000000):
         #     self.counter = 0
 
         # No delay
-        # self.h1 = 0.001
-        # self.h2 = 0.001
+        self.h1 = 0.001
+        self.h2 = 0.001
 
         now = self.get_clock().now()
         

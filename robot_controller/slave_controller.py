@@ -6,6 +6,7 @@ from control_msgs.msg import DynamicJointState
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Float64 
 from geometry_msgs.msg import Twist
+from sensor_msgs.msg import LaserScan
 
 class SlaveControllerNode(Node):
     def __init__(self):
@@ -26,22 +27,10 @@ class SlaveControllerNode(Node):
         self.f_v = 0.0
         self.f_s = [0.0, 0.0]
 
-        # # Tham so thoi gian, van toc tinh toan gia toc robot
-        # self.v_prev = 0.0
-        # self.omega_prev = 0.0
-        # self.time_prev = self.get_clock().now()
-
         self.master_subscription = self.create_subscription(
             DynamicJointState,
-            '/fd/dynamic_joint_states_delayed',
+            '/delayed/fd/dynamic_joint_states',
             self.master_callback,
-            10
-        )
-
-        self.slave_subscription = self.create_subscription(
-            Odometry,
-            '/diff_cont/odom',
-            self.slave_callback,
             10
         )
 
@@ -52,16 +41,9 @@ class SlaveControllerNode(Node):
             10
         )
 
-        # Mo phong robot that co cac gioi han vat ly. Chay node check_limit_vel
-        # self.cmd_vel_pubblisher = self.create_publisher(
-        #     Twist,
-        #     '/cmd_vel',
-        #     10
-        # )
-
         self.cmd_vel_pubblisher = self.create_publisher(
             Twist,
-            '/cmd_vel_checked',
+            '/diff_drive_controller/cmd_vel_unstamped',
             10
         )
 
@@ -71,37 +53,6 @@ class SlaveControllerNode(Node):
     def master_callback(self, msg : DynamicJointState):
         self.pos_x = -msg.interface_values[0].values[0]
         self.pos_y = -msg.interface_values[1].values[0]
-
-        # Anh xa vi tri tay cam khi co gioi han vat ly
-        # if self.pos_x > 0.00:
-        #     self.pos_x += 0.015
-        # elif self.pos_x < -0.00:
-        #     self.pos_x -= 0.015
-        # else:
-        #     if self.pos_y >= 0.01:
-        #         self.pos_y += 0.1726
-        #     elif self.pos_y <= -0.01:
-        #         self.pos_y -= 0.1726
-        
-
-    def slave_callback(self, msg : Odometry):
-        # Lấy vận tốc hiện tại
-        self.v = msg.twist.twist.linear.x
-        self.omega = msg.twist.twist.angular.z
-
-        # # Lấy thời gian hiện tại
-        # time_now = self.get_clock().now()
-        # dt = (time_now - self.time_prev).nanoseconds * 1e-9  # giây
-
-        # if dt > 0.0:
-        #     # Tính gia tốc
-        #     self.a_v = (self.v - self.v_prev) / dt
-        #     self.a_omega = (self.omega - self.omega_prev) / dt
-
-        # # Cập nhật lại giá trị trước
-        # self.v_prev = self.v
-        # self.omega_prev = self.omega
-        # self.time_prev = time_now
 
     def fv_callback(self, msg : Float64):
         self.f_v = msg.data

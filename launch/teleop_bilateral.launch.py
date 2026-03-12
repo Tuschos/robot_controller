@@ -33,10 +33,4 @@ def generate_launch_description():
             name='data_logger',
             output='screen',
         ),
-        Node(
-            package='robot_controller',
-            executable='check_limit_vel',
-            name='check_limit_vel',
-            output='screen',
-        ),
     ])

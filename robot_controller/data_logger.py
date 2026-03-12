@@ -13,9 +13,9 @@ class DataLogger(Node):
     def __init__(self):
         super().__init__('data_logger')
         self.force_sub = self.create_subscription(Float64MultiArray, '/fd/fd_controller/commands', self.force_cb, 10)
-        self.odom_sub = self.create_subscription(Odometry, '/diff_cont/odom', self.odom_cb, 10)
+        self.odom_sub = self.create_subscription(Odometry, '/diff_drive_controller/odom', self.odom_cb, 10)
         self.fictitious_sub = self.create_subscription(Float64, '/fictitious_force', self.fictitious_cb, 10)
-        self.master_sub = self.create_subscription(DynamicJointState, '/fd/dynamic_joint_states_delayed',self.master_cb,10)
+        self.master_sub = self.create_subscription(DynamicJointState, '/delayed/fd/dynamic_joint_states',self.master_cb,10)
 
         self.csv_file = open('/home/tus/data_log_teleop/log1.csv', 'w', newline='')
         self.writer = csv.writer(self.csv_file)
@@ -50,12 +50,6 @@ class DataLogger(Node):
         self.pos_x = msg.interface_values[0].values[0]
         self.pos_y = msg.interface_values[1].values[0]
         self.h1 = self.get_clock().now().to_msg().sec * 1e3 + 1e-6 * self.get_clock().now().to_msg().nanosec - (msg.header.stamp.sec * 1e3 + 1e-6 * msg.header.stamp.nanosec)
-        if self.h1 > 50:
-            self.h2 = 210
-        elif self.h1 > 480:
-            self.h2 = 610
-        else:
-            self.h2 = 0.0
 
     def log_data(self):
         now = self.get_clock().now().to_msg().sec + 1e-9 * self.get_clock().now().to_msg().nanosec - self.start_time

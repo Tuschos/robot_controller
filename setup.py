@@ -29,8 +29,6 @@ setup(
             "delay_relay_node = robot_controller.delay_relay_node:main",
             "data_logger = robot_controller.data_logger:main",
             "check_limit_vel = robot_controller.check_limit_vel:main",
-            "cal_delay = robot_controller.cal_delay:main",
-            "talker = robot_controller.talker:main",
             "pwm_and_logger = robot_controller.pwm_and_logger:main",
             "data_logger_realtime = robot_controller.data_logger_realtime:main",
         ],

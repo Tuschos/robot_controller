@@ -14,9 +14,7 @@ class MasterControllerNode(Node):
         self.k_m = [20.0, 5.0]
         self.k_g = [8.0, 16.0]
         self.alpha_m = [0.0, 0.0]
-        self.alpha_m = [16.0, 4.0]
-        #self.k_p = [0.01, 0.01]
-        self.k_p = [0.0, 0.0]
+
 
         # Thong so master & slave
         self.v = 0.0
@@ -36,7 +34,7 @@ class MasterControllerNode(Node):
 
         self.slave_subscription = self.create_subscription(
             Odometry,
-            '/diff_cont/odom_delayed',
+            '/delayed/diff_drive_controller/odom',
             self.slave_callback,
             10
         )
@@ -55,11 +53,6 @@ class MasterControllerNode(Node):
         self.vel_x = msg.interface_values[0].values[1]
         self.pos_y = msg.interface_values[1].values[0]
         self.vel_y = msg.interface_values[1].values[1] 
-
-        # if self.pos_x > 0.00:
-        #     self.pos_x += 0.015
-        # elif self.pos_x < -0.00:
-        #     self.pos_x -= 0.015
 
     def slave_callback(self, msg : Odometry):
         self.v = msg.twist.twist.linear.x
@@ -82,11 +75,10 @@ class MasterControllerNode(Node):
         k_m = self.k_m
         k_g = self.k_g
         alpha_m = self.alpha_m
-        k_p = self.k_p
 
         # Tinh luc phan hoi tren tung truc
-        f_x = -k_m[0] * (k_g[0] * pos_x - v) - alpha_m[0] * vel_x - k_p[0] * vel_x
-        f_y = -k_m[1] * (k_g[1] * pos_y - omega) - alpha_m[1] * vel_y - k_p[1] * vel_y
+        f_x = -k_m[0] * (k_g[0] * pos_x - v) - alpha_m[0] * vel_x
+        f_y = -k_m[1] * (k_g[1] * pos_y - omega) - alpha_m[1] * vel_y
 
         # Gán vào mảng dữ liệu
         self.f_m = [-f_x, -f_y, 0.0]  # trục z = 0
@@ -101,6 +93,9 @@ class MasterControllerNode(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = MasterControllerNode()
-    rclpy.spin(node)
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
     node.destroy_node()
     rclpy.shutdown()

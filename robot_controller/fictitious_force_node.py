@@ -14,7 +14,7 @@ class FictitiousForceNode(Node):
         self.declare_parameter('robot_width', 0.23)   # m
         self.declare_parameter('delta', 0.2)         # m
         self.declare_parameter('force_gain', 12.0)
-        self.declare_parameter('force_max', 0.25)
+        self.declare_parameter('force_max', 0.30)
 
         self.c = self.get_parameter('robot_width').value
         self.delta = self.get_parameter('delta').value
@@ -36,7 +36,7 @@ class FictitiousForceNode(Node):
         
         self.slave_subscription = self.create_subscription(
             Odometry,
-            '/diff_cont/odom',
+            '/diff_drive_controller/odom',
             self.odom_callback,
             10
         )
@@ -51,8 +51,28 @@ class FictitiousForceNode(Node):
         self.v = msg.twist.twist.linear.x
         self.omega = msg.twist.twist.angular.z
 
+    def lidar_max_with_angle(ranges, angles, segments=36):
+        ranges = np.array(ranges)
+        angles = np.array(angles)
+
+        n = len(ranges)
+        step = n // segments
+
+        max_ranges = []
+        max_angles = []
+
+        for i in range(segments):
+            start = i * step
+            end = (i + 1) * step if i < segments - 1 else n
+
+            idx = np.argmax(ranges[start:end])  # vị trí max trong đoạn
+
+            max_ranges.append(ranges[idx + start])
+            max_angles.append(angles[idx + start])
+
+        return np.array(max_ranges), np.array(max_angles)
+
     def laser_callback(self, scan: LaserScan):
-        # Bước 1: Dự đoán bán kính quỹ đạo
         v = self.v
         omega = self.omega
         c = self.c
@@ -60,23 +80,26 @@ class FictitiousForceNode(Node):
         k = self.k
         s_max = self.s_max
 
-        if abs(omega) < 0.001:  # coi như đi thẳng
+        # Tinh quy dao
+        if abs(omega) < 0.001:  # coi nhu di thang
             r = 1e6
         else:
             r = abs(v / omega)
 
-        # Thông tin tia laser
-        n = len(scan.ranges)
-        angles = scan.angle_min + np.arange(n) * scan.angle_increment
+        # chuan hoa du lieu laser
+        angles = scan.angle_min + np.arange(len(scan.ranges)) * scan.angle_increment
         ranges = np.array(scan.ranges)
 
-        # Lực fictitious (theo trục x robot)
+        # Tinh toan luc ao
         fic_force = Float64()
         fv_raw = 0.0
-        
-        for i in range(n):
-            l_i = ranges[i]
-            theta_i = angles[i]
+
+        # Lay max range trong 36 segment
+        ranges_max, angles_max = FictitiousForceNode.lidar_max_with_angle(ranges, angles)
+
+        for i in range(len(ranges_max)):    
+            l_i = ranges_max[i]
+            theta_i = angles_max[i]
             
             #if v < 0:
                 #if theta_i > 0:
@@ -84,8 +107,7 @@ class FictitiousForceNode(Node):
                 #else:
                   #  theta_i = theta_i + 3.14
 
-            if theta_i > -1.3 and theta_i < 1.3:          
-                # Vị trí oi theo quỹ đạo dự đoán
+            if theta_i > -1.57 and theta_i < 1.57:          
                 # (Nếu robot đi thẳng, oi chính là điểm trên trục x)
                 if abs(omega) < 0.001:
                     s_i = l_i * math.cos(theta_i)
@@ -108,14 +130,14 @@ class FictitiousForceNode(Node):
                 else:
                     p_i = 0.0
 
-                # Tổng hợp lực
+                # Tong hop luc ao
                 fv_raw += p_i * (s_max - s_i if s_i <= s_max else 0.0)
             
             else:
                 continue
         
         # Luc ao raw chua loc
-        fv_raw = (float) (k * fv_raw / n)
+        fv_raw = (float) (k * fv_raw / len(ranges_max))
 
         #Loc thong thap lam muot luc ao
         self.fv_fil = self.fv_fil * self.alpha + (1 - self.alpha) * fv_raw
